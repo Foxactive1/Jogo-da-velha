@@ -1,0 +1,14 @@
+{
+  "name": "jogo-da-velha-ia",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Jogo da Velha responsivo com IA Minimax e modo local.",
+  "scripts": {
+    "test": "node --test",
+    "start": "python3 -m http.server 8080"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

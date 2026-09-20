@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Jogo da Velha com inteligência artificial Minimax, três dificuldades e modo para dois jogadores.">
+  <meta name="theme-color" content="#0b1020">
+  <meta property="og:title" content="Jogo da Velha IA 2.0">
+  <meta property="og:description" content="Enfrente uma IA estratégica ou desafie outra pessoa no mesmo dispositivo.">
+  <meta property="og:type" content="website">
+  <title>Jogo da Velha IA 2.0</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#game-board">Ir para o tabuleiro</a>
+
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Jogo da Velha IA — início">
+      <span class="brand-mark" aria-hidden="true">#</span>
+      <span>
+        <strong>Jogo da Velha</strong>
+        <small>IA 2.0</small>
+      </span>
+    </a>
+
+    <div class="header-actions">
+      <button id="sound-toggle" class="icon-button" type="button" aria-label="Desativar sons" title="Ativar ou desativar sons">♪</button>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Ativar tema claro" title="Alternar tema">☼</button>
+      <button id="settings-open" class="icon-button" type="button" aria-label="Abrir configurações" title="Configurações">⚙</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <span class="eyebrow">Estratégia em 9 casas</span>
+      <h1 id="page-title">Pense à frente.<br><span>Vença a máquina.</span></h1>
+      <p>Três níveis de inteligência, partidas locais e análise visual das decisões da IA.</p>
+    </section>
+
+    <section class="game-layout" aria-label="Área da partida">
+      <aside class="panel score-panel" aria-labelledby="score-title">
+        <div class="panel-heading">
+          <div>
+            <span class="section-kicker">Campeonato</span>
+            <h2 id="score-title">Placar</h2>
+          </div>
+          <button id="score-reset" class="text-button" type="button">Zerar</button>
+        </div>
+
+        <div class="score-list">
+          <article class="score-card score-primary">
+            <span id="player-one-mark" class="score-symbol">X</span>
+            <div><small id="player-one-label">Você</small><strong id="score-player-one">0</strong></div>
+          </article>
+          <article class="score-card">
+            <span class="score-symbol score-symbol-muted">＝</span>
+            <div><small>Empates</small><strong id="score-draws">0</strong></div>
+          </article>
+          <article class="score-card score-secondary">
+            <span id="player-two-mark" class="score-symbol">O</span>
+            <div><small id="player-two-label">Inteligência Artificial</small><strong id="score-player-two">0</strong></div>
+          </article>
+        </div>
+
+        <div class="match-meta">
+          <div><span>Modo</span><strong id="meta-mode">Contra IA</strong></div>
+          <div><span>Dificuldade</span><strong id="meta-difficulty">Impossível</strong></div>
+        </div>
+      </aside>
+
+      <section class="board-panel" aria-labelledby="game-status">
+        <div class="turn-indicator">
+          <span id="turn-dot" class="turn-dot" aria-hidden="true"></span>
+          <p id="game-status" aria-live="polite">Sua vez — escolha uma casa</p>
+        </div>
+
+        <div id="game-board" class="game-board" role="grid" aria-label="Tabuleiro de jogo da velha">
+          <button class="cell" type="button" role="gridcell" data-index="0" aria-label="Linha 1, coluna 1"></button>
+          <button class="cell" type="button" role="gridcell" data-index="1" aria-label="Linha 1, coluna 2"></button>
+          <button class="cell" type="button" role="gridcell" data-index="2" aria-label="Linha 1, coluna 3"></button>
+          <button class="cell" type="button" role="gridcell" data-index="3" aria-label="Linha 2, coluna 1"></button>
+          <button class="cell" type="button" role="gridcell" data-index="4" aria-label="Linha 2, coluna 2"></button>
+          <button class="cell" type="button" role="gridcell" data-index="5" aria-label="Linha 2, coluna 3"></button>
+          <button class="cell" type="button" role="gridcell" data-index="6" aria-label="Linha 3, coluna 1"></button>
+          <button class="cell" type="button" role="gridcell" data-index="7" aria-label="Linha 3, coluna 2"></button>
+          <button class="cell" type="button" role="gridcell" data-index="8" aria-label="Linha 3, coluna 3"></button>
+        </div>
+
+        <div class="board-actions">
+          <button id="new-round" class="primary-button" type="button"><span aria-hidden="true">↻</span> Nova rodada</button>
+          <button id="undo-move" class="secondary-button" type="button"><span aria-hidden="true">↶</span> Desfazer</button>
+        </div>
+      </section>
+
+      <aside class="panel insight-panel" aria-labelledby="insight-title">
+        <div class="panel-heading">
+          <div>
+            <span class="section-kicker">Modo explicável</span>
+            <h2 id="insight-title">Leitura da IA</h2>
+          </div>
+          <span class="live-badge"><i></i> Ativo</span>
+        </div>
+
+        <div id="ai-insight" class="insight-content" aria-live="polite">
+          <div class="insight-visual" aria-hidden="true">⌁</div>
+          <p>A análise aparecerá após a primeira jogada da inteligência artificial.</p>
+        </div>
+
+        <dl class="metrics">
+          <div><dt>Estratégia</dt><dd id="metric-strategy">—</dd></div>
+          <div><dt>Posições avaliadas</dt><dd id="metric-nodes">0</dd></div>
+          <div><dt>Podas realizadas</dt><dd id="metric-prunes">0</dd></div>
+          <div><dt>Tempo de decisão</dt><dd id="metric-duration">0 ms</dd></div>
+        </dl>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <p>Desenvolvido por <strong>InNovaIdeia Assessoria em Tecnologia ®</strong></p>
+    <a href="https://github.com/Foxactive1/JogoDaVelha" target="_blank" rel="noreferrer">Ver código no GitHub ↗</a>
+  </footer>
+
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <form method="dialog" class="settings-form">
+      <div class="dialog-heading">
+        <div><span class="section-kicker">Personalize a partida</span><h2 id="settings-title">Configurações</h2></div>
+        <button class="icon-button" value="cancel" aria-label="Fechar configurações">×</button>
+      </div>
+
+      <fieldset>
+        <legend>Modo de jogo</legend>
+        <div class="segmented-control">
+          <label><input type="radio" name="mode" value="ai"><span>Contra IA</span></label>
+          <label><input type="radio" name="mode" value="local"><span>2 jogadores</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset id="difficulty-field">
+        <legend>Dificuldade</legend>
+        <div class="segmented-control three-items">
+          <label><input type="radio" name="difficulty" value="easy"><span>Fácil</span></label>
+          <label><input type="radio" name="difficulty" value="medium"><span>Médio</span></label>
+          <label><input type="radio" name="difficulty" value="hard"><span>Impossível</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset id="symbol-field">
+        <legend>Seu símbolo</legend>
+        <div class="segmented-control">
+          <label><input type="radio" name="humanSymbol" value="X"><span>Jogar com X</span></label>
+          <label><input type="radio" name="humanSymbol" value="O"><span>Jogar com O</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset id="starter-field">
+        <legend>Quem começa</legend>
+        <div class="segmented-control">
+          <label><input type="radio" name="starter" value="human"><span>Você</span></label>
+          <label><input type="radio" name="starter" value="ai"><span>Adversário</span></label>
+        </div>
+      </fieldset>
+
+      <label class="switch-row">
+        <span><strong>Explicar decisões da IA</strong><small>Exibe métricas do algoritmo Minimax</small></span>
+        <input id="explain-ai-setting" type="checkbox" name="explainAi" role="switch">
+      </label>
+
+      <button id="settings-save" class="primary-button full-width" type="button">Salvar e iniciar nova rodada</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
