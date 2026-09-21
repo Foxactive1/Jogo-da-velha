@@ -153,6 +153,19 @@ legend { margin-bottom: .55rem; color: var(--muted); font-size: .72rem; font-wei
 .switch-row input:checked { background: var(--primary-strong); }
 .switch-row input:checked::before { transform: translateX(20px); }
 .full-width { width: 100%; }
+.field-label { display: block; margin: 0 0 .45rem; color: var(--muted); font-size: .72rem; font-weight: 700; }
+.text-input { width: 100%; min-height: 46px; margin-bottom: .85rem; padding: .7rem .85rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); color: var(--text); }
+.text-input::placeholder { color: var(--muted); }
+.room-code-input { text-align: center; color: var(--primary); font-size: 1.15rem; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; }
+.divider { display: flex; align-items: center; gap: .7rem; margin: 1rem 0; color: var(--muted); font-size: .66rem; }
+.divider::before, .divider::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+.room-ticket { padding: 1.35rem; border: 1px dashed var(--primary); border-radius: 18px; background: rgba(66, 232, 180, .06); text-align: center; }
+.room-ticket strong { display: block; margin: .45rem 0; color: var(--primary); font-size: clamp(2rem, 8vw, 3.2rem); letter-spacing: .14em; }
+.room-ticket p { margin: 0; color: var(--muted); font-size: .75rem; }
+.online-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: .6rem; margin-top: .8rem; }
+.danger-button { display: block; margin: 1rem auto 0; color: var(--danger); }
+.connection-offline { color: var(--danger); }
+.online-opponent { color: var(--secondary); }
 .toast { position: fixed; left: 50%; bottom: 1.5rem; z-index: 30; transform: translate(-50%, 150%); padding: .75rem 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-3); box-shadow: var(--shadow); font-size: .75rem; font-weight: 700; opacity: 0; transition: transform .25s, opacity .25s; }
 .toast.visible { transform: translate(-50%, 0); opacity: 1; }
 
