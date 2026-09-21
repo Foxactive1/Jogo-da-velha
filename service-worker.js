@@ -1,4 +1,4 @@
-const CACHE_NAME = "jogo-da-velha-v2.0.0";
+const CACHE_NAME = "jogo-da-velha-v2.1.0";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -7,6 +7,8 @@ const APP_SHELL = [
   "./js/game.js",
   "./js/ai.js",
   "./js/storage.js",
+  "./js/online.js",
+  "./js/vendor/socket.io.min.js",
   "./manifest.webmanifest",
   "./assets/icons/icon.svg",
 ];
@@ -26,6 +28,8 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+  if (url.pathname.startsWith("/socket.io/") || url.pathname === "/health") return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {

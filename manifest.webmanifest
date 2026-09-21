@@ -1,7 +1,7 @@
 {
   "name": "Jogo da Velha IA 2.0",
   "short_name": "Velha IA",
-  "description": "Jogo da Velha responsivo com inteligência artificial Minimax.",
+  "description": "Jogo da Velha com IA Minimax, modo local e salas online por convite.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",

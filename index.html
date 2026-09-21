@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Jogo da Velha com inteligência artificial Minimax, três dificuldades e modo para dois jogadores.">
+  <meta name="description" content="Jogo da Velha com IA Minimax, modo local e partidas online por convite.">
   <meta name="theme-color" content="#0b1020">
   <meta property="og:title" content="Jogo da Velha IA 2.0">
   <meta property="og:description" content="Enfrente uma IA estratégica ou desafie outra pessoa no mesmo dispositivo.">
@@ -26,6 +26,7 @@
     </a>
 
     <div class="header-actions">
+      <button id="online-open" class="icon-button" type="button" aria-label="Abrir informações da sala" title="Sala online" hidden>⌁</button>
       <button id="sound-toggle" class="icon-button" type="button" aria-label="Desativar sons" title="Ativar ou desativar sons">♪</button>
       <button id="theme-toggle" class="icon-button" type="button" aria-label="Ativar tema claro" title="Alternar tema">☼</button>
       <button id="settings-open" class="icon-button" type="button" aria-label="Abrir configurações" title="Configurações">⚙</button>
@@ -36,7 +37,7 @@
     <section class="hero" aria-labelledby="page-title">
       <span class="eyebrow">Estratégia em 9 casas</span>
       <h1 id="page-title">Pense à frente.<br><span>Vença a máquina.</span></h1>
-      <p>Três níveis de inteligência, partidas locais e análise visual das decisões da IA.</p>
+      <p>Três níveis de inteligência, partidas locais, salas online e análise visual das decisões da IA.</p>
     </section>
 
     <section class="game-layout" aria-label="Área da partida">
@@ -100,7 +101,7 @@
             <span class="section-kicker">Modo explicável</span>
             <h2 id="insight-title">Leitura da IA</h2>
           </div>
-          <span class="live-badge"><i></i> Ativo</span>
+          <span id="insight-badge" class="live-badge"><i></i> Ativo</span>
         </div>
 
         <div id="ai-insight" class="insight-content" aria-live="polite">
@@ -132,9 +133,10 @@
 
       <fieldset>
         <legend>Modo de jogo</legend>
-        <div class="segmented-control">
+        <div class="segmented-control three-items">
           <label><input type="radio" name="mode" value="ai"><span>Contra IA</span></label>
           <label><input type="radio" name="mode" value="local"><span>2 jogadores</span></label>
+          <label><input type="radio" name="mode" value="online"><span>Online</span></label>
         </div>
       </fieldset>
 
@@ -163,13 +165,48 @@
         </div>
       </fieldset>
 
-      <label class="switch-row">
+      <label id="explain-field" class="switch-row">
         <span><strong>Explicar decisões da IA</strong><small>Exibe métricas do algoritmo Minimax</small></span>
         <input id="explain-ai-setting" type="checkbox" name="explainAi" role="switch">
       </label>
 
       <button id="settings-save" class="primary-button full-width" type="button">Salvar e iniciar nova rodada</button>
     </form>
+  </dialog>
+
+  <dialog id="online-dialog" aria-labelledby="online-title">
+    <div class="settings-form online-form">
+      <div class="dialog-heading">
+        <div><span class="section-kicker">Multiplayer pela internet</span><h2 id="online-title">Sala online</h2></div>
+        <button id="online-close" class="icon-button" type="button" aria-label="Fechar sala online">×</button>
+      </div>
+
+      <div id="online-entry">
+        <label class="field-label" for="online-name">Seu nome</label>
+        <input id="online-name" class="text-input" type="text" maxlength="24" autocomplete="nickname" placeholder="Como deseja aparecer?">
+
+        <button id="online-create" class="primary-button full-width" type="button">Criar uma nova sala</button>
+
+        <div class="divider"><span>ou entre por código</span></div>
+
+        <label class="field-label" for="online-code">Código da sala</label>
+        <input id="online-code" class="text-input room-code-input" type="text" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="ABC123">
+        <button id="online-join" class="secondary-button full-width" type="button">Entrar na sala</button>
+      </div>
+
+      <div id="online-room" hidden>
+        <div class="room-ticket">
+          <span class="section-kicker">Código da sala</span>
+          <strong id="online-room-code">——</strong>
+          <p id="online-room-status">Aguardando o outro jogador…</p>
+        </div>
+        <div class="online-actions">
+          <button id="online-copy" class="primary-button" type="button">Copiar convite</button>
+          <button id="online-share" class="secondary-button" type="button">Compartilhar</button>
+        </div>
+        <button id="online-leave" class="text-button danger-button" type="button">Sair da sala</button>
+      </div>
+    </div>
   </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>

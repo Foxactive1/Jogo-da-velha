@@ -1,88 +1,143 @@
-# Jogo da Velha IA 2.0
+# Jogo da Velha IA 2.1
 
-Uma releitura moderna do clássico Jogo da Velha, com interface responsiva, partidas locais e uma inteligência artificial baseada no algoritmo Minimax com poda alfa-beta.
+Uma releitura moderna do clássico Jogo da Velha, agora com inteligência artificial, partidas locais e salas multiplayer pela internet.
 
-## Destaques
+## Modos de jogo
 
-- Modo jogador contra IA e modo local para duas pessoas.
-- Três dificuldades: fácil, médio e impossível.
-- Escolha do símbolo e de quem inicia a rodada.
+- **Contra IA:** dificuldades fácil, médio e impossível, com Minimax e poda alfa-beta.
+- **Dois jogadores:** partida local no mesmo dispositivo.
+- **Online:** um jogador cria a sala e envia o código ou link de convite ao adversário.
+
+## Multiplayer online
+
+O servidor Flask-SocketIO é autoritativo: ele valida o participante, o turno, a posição escolhida, o resultado e o placar. O cliente apenas solicita a jogada e renderiza o estado recebido.
+
+- Salas privadas com código de seis caracteres.
+- Link de convite com preenchimento automático do código.
+- Limite de dois jogadores por sala.
+- Nomes personalizados e identificação de `X` e `O`.
+- Placar e tabuleiro sincronizados em tempo real.
+- Bloqueio de jogadas inválidas ou fora do turno.
+- Alternância de quem inicia cada nova rodada.
+- Reconexão automática por token mantido somente na sessão do navegador.
+- Salas inativas removidas após duas horas por padrão.
+
+> As salas são armazenadas em memória. A implantação deve usar um único processo. Para múltiplas instâncias, substitua o armazenamento por Redis e configure o gerenciador de mensagens do Flask-SocketIO.
+
+## Outros recursos
+
 - IA explicável com estratégia, posições avaliadas, podas e tempo de decisão.
-- Placar persistente no navegador.
-- Desfazer jogada e reiniciar rodada.
+- Escolha do símbolo e de quem inicia nos modos locais.
+- Placar local persistente no navegador.
+- Desfazer jogada nos modos offline.
 - Temas claro e escuro, sons opcionais e navegação por teclado.
-- PWA com funcionamento offline e instalação no dispositivo.
-- Testes automatizados da regra do jogo e da IA.
+- PWA com funcionamento offline para os modos IA e local.
+- Testes automatizados do motor e do servidor multiplayer.
 - Versão original em Python/Tkinter preservada em [`legacy/`](legacy/).
 
 ## Tecnologias
 
-- HTML5 semântico
-- CSS3 responsivo
-- JavaScript ES Modules
-- LocalStorage
+- HTML5, CSS3 e JavaScript ES Modules
+- Python 3.12, Flask e Flask-SocketIO
+- WebSocket com fallback para HTTP long-polling
+- LocalStorage e SessionStorage
 - Service Worker e Web App Manifest
-- Node.js Test Runner
-- GitHub Actions
+- Node.js Test Runner e Python `unittest`
+- Docker, Gunicorn e GitHub Actions
 
 ## Estrutura
 
 ```text
 .
-├── assets/icons/       # Ícone da aplicação
-├── css/style.css       # Design system e responsividade
+├── assets/icons/
+├── css/style.css
 ├── js/
-│   ├── ai.js           # Minimax, poda alfa-beta e dificuldades
-│   ├── app.js          # Interface e fluxo da partida
-│   ├── game.js         # Regras independentes da interface
-│   └── storage.js      # Placar e preferências locais
-├── legacy/             # Primeira versão em Python/Tkinter
-├── tests/              # Testes automatizados
+│   ├── ai.js             # Minimax e níveis de dificuldade
+│   ├── app.js            # Interface e fluxo dos três modos
+│   ├── game.js           # Regras independentes da interface
+│   ├── online.js         # Cliente Socket.IO e reconexão
+│   └── storage.js        # Preferências e placar local
+├── legacy/               # Primeira versão em Tkinter
+├── tests/
+│   ├── game.test.js
+│   └── test_server.py
+├── server.py             # API em tempo real e servidor estático
+├── requirements.txt
+├── Dockerfile
 ├── index.html
 ├── manifest.webmanifest
 └── service-worker.js
 ```
 
-## Executar localmente
-
-O projeto não precisa de instalação de dependências. Como utiliza módulos JavaScript e Service Worker, deve ser servido por HTTP:
+## Executar no Windows, Linux ou macOS
 
 ```bash
-npm start
+python -m venv .venv
 ```
 
-Abra `http://localhost:8080`.
-
-Alternativa sem npm:
+Ative o ambiente:
 
 ```bash
-python3 -m http.server 8080
+# Linux/macOS
+source .venv/bin/activate
+
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
 ```
+
+Instale e execute:
+
+```bash
+pip install -r requirements.txt
+python server.py
+```
+
+Acesse `http://localhost:5000`.
+
+## Executar no Termux
+
+```bash
+pkg update
+pkg install python git
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python server.py
+```
+
+Para testar entre aparelhos na mesma rede Wi-Fi, descubra o IP do celular e abra `http://IP_DO_CELULAR:5000` no segundo dispositivo. Para jogar realmente pela internet, publique o servidor em um provedor compatível com WebSocket.
 
 ## Testes
 
-Requer Node.js 20 ou superior:
-
 ```bash
 npm test
+python -m unittest -v tests/test_server.py
+```
+
+Os testes cobrem regras, IA impossível, criação e lotação de salas, autorização de turno, sincronização de vitória, placar, reconexão e exposição segura de arquivos.
+
+## Docker
+
+```bash
+docker build -t jogo-da-velha .
+docker run --rm -p 5000:5000 -e SECRET_KEY="troque-em-producao" jogo-da-velha
 ```
 
 ## Publicação
 
-O projeto é estático e pode ser publicado diretamente no GitHub Pages ou na Vercel, sem etapa de build. Na Vercel, mantenha o diretório raiz como diretório de saída.
+Use um serviço que mantenha conexões WebSocket, como Render, Railway, Fly.io ou uma VPS. Configure:
 
-## Como funciona a IA
+- comando de build: `pip install -r requirements.txt`
+- comando de inicialização: `gunicorn --worker-class gthread --workers 1 --threads 100 --bind 0.0.0.0:$PORT server:app`
+- variável `SECRET_KEY` com um valor forte e exclusivo
+- endpoint de saúde: `/health`
 
-- **Fácil:** seleciona aleatoriamente uma casa livre.
-- **Médio:** combina análise Minimax com variação estratégica.
-- **Impossível:** percorre as possibilidades até o fim da partida e usa poda alfa-beta para eliminar ramos desnecessários. O fator de profundidade faz a IA priorizar vitórias rápidas e adiar derrotas inevitáveis.
+GitHub Pages e hospedagem puramente estática continuam adequados para IA/local, mas não hospedam o servidor das partidas online.
 
 ## Versão original
 
-A implementação inicial em Tkinter continua disponível:
-
 ```bash
-python3 legacy/JogoDaVelha.py
+python legacy/JogoDaVelha.py
 ```
 
 ---
